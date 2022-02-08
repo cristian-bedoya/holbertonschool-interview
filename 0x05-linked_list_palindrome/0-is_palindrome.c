@@ -1,49 +1,49 @@
 #include "lists.h"
-
 /**
- * is_palindrome - Function that checks
- * if a singly linked list is a palindrome.
- *
- * @head: Double pointer to head of linked list.
- *
- * Return: 0 if it is not a palindrome, 1 if it is a palindrome.
+ * reverse - reverses a linked list nodes
+ * @head: node to the first node in a linked list
+ * Return: pointer to the first node in the reversed linked list
  */
+listint_t *reverse(listint_t *head)
+{
+	listint_t *t = head;
+	listint_t *curr = head;
+	listint_t *prev = NULL;
 
+	while (t)
+	{
+		t = curr->next;
+		curr->next = prev;
+		prev = curr;
+		curr = t;
+	}
+	return (prev);
+}
+/**
+ * is_palindrome - checks if a singly linked list is a palindrome
+ * @head: double pointer to the first node in a linked list
+ * Return: 1 if its a palindrome, 0 if it isn't
+ */
 int is_palindrome(listint_t **head)
 {
-	int palindrome = 1, num_nodes = 1, i = 0, *arr = NULL;
-	listint_t *ptr = NULL;
+	listint_t *s, *f, *curr, *rev;
 
-	if (head == NULL)
-		return (0);
-	if (*head == NULL)
-		return (1);
-
-	ptr = *head;
-	while (ptr->next != NULL)
+	curr = *head;
+	s = *head;
+	f = *head;
+	while (curr && f->next && f->next->next)
 	{
-		num_nodes += 1;
-		ptr = ptr->next;
+		s = s->next;
+		f = f->next->next;
 	}
-
-	arr = malloc(num_nodes * sizeof(int));
-
-	ptr = *head;
-	while (ptr != NULL)
+	rev = reverse(s);
+	while (rev && curr)
 	{
-		arr[i++] = ptr->n;
-		ptr = ptr->next;
+		if (rev->n != curr->n)
+			return (0);
+
+		rev = rev->next;
+		curr = curr->next;
 	}
-
-	i = 0;
-	while (i < num_nodes && palindrome == 1)
-	{
-		if (arr[i] != arr[num_nodes - 1 - i])
-			palindrome = 0;
-		i++;
-	}
-
-	free(arr);
-
-	return (palindrome);
+	return (1);
 }
