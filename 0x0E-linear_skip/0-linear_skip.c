@@ -1,60 +1,87 @@
 #include "search.h"
-
 /**
- * check_in_list - checks if value equals value of node after getting
- * the right boundaries.
- * @list: pointer to the head of the skip list to search in.
- * @value: value to search for
- * @last: pointer to the last node of defining the boundary.
+ * print_found - print message
+ * @f_idx: first_idx
+ * @s_idx: second_idx
+ * @end: know if the last one in express line
  *
- * Return: pointer to the first node where value is located
+ * Return: nothing
  */
-skiplist_t *check_in_list(skiplist_t *list, int value, skiplist_t *last)
+void print_found(size_t f_idx, size_t s_idx, skiplist_t *end)
 {
-	while (list)
+	if (end != NULL)
 	{
-		printf("Value checked at index [%lu] = [%d]\n", list->index, list->n);
-		if (list->n == value)
-			return (list);
-		if (list->index == last->index)
-			break;
-		list = list->next;
+		while (end->next != NULL)
+			end = end->next;
+		s_idx = end->index;
+	}
+	printf("Value found between indexes [%lu] and [%lu]\n", f_idx, s_idx);
+}
+/**
+ * print_check - print message
+ * @idx: index
+ * @value: value
+ *
+ * Return: nothing
+ */
+void print_check(size_t idx, int value)
+{
+	printf("Value checked at index [%lu] = [%i]\n", idx, value);
+}
+/**
+ * find_each - check next by next
+ * @head: express line node
+ * @value: value to compare
+ *
+ * Return: node found
+ */
+skiplist_t *find_each(skiplist_t *head, int value)
+{
+	skiplist_t *current = head;
+
+	if (head == NULL)
+		printf("n head nullll");
+	for (; current; current = current->next)
+	{
+		print_check(current->index, current->n);
+		if (current->n == value)
+			return (current);
 	}
 	return (NULL);
 }
-
 /**
- * linear_skip - searches for a value in a sorted skip list of integers
- * @list: pointer to the head of the skip list to search in.
- * @value: value to search for
+ * linear_skip - found a value in skip list
+ * @head: express line node
+ * @value: value to compare
  *
- * Return: pointer to the first node where value is located
+ * Return: node found
  */
-skiplist_t *linear_skip(skiplist_t *list, int value)
+skiplist_t *linear_skip(skiplist_t *head, int value)
 {
-	skiplist_t *last;
+	skiplist_t *current  = head, *next = NULL;
 
-	while (list)
+	if (head == NULL)
+		return (NULL);
+
+	while (current != NULL)
 	{
-		printf("Value checked at index [%lu] = [%d]\n",
-				list->express->index, list->express->n);
-		if (list->express->n >= value)
+		next = current->express;
+		if (next != NULL)
 		{
-			last = list->express;
-			printf("Value found between indexes [%lu] and [%lu]\n",
-					list->index, last->index);
-			return (check_in_list(list, value, last));
+			print_check(next->index, next->n);
+			if (next->n >= value)
+			{
+				print_found(current->index, next->index, NULL);
+				return (find_each(current, value));
+			}
+
+			if (next->express == NULL)
+			{
+				print_found(next->index, 0, next);
+				return (find_each(next, value));
+			}
 		}
-		list = list->express;
-		if (!list->express)
-		{
-			last = list;
-			while (last->next)
-				last = last->next;
-			printf("Value found between indexes [%lu] and [%lu]\n",
-					list->index, last->index);
-			return (check_in_list(list, value, last));
-		}
+		current = current->express;
 	}
 	return (NULL);
 }
